@@ -18,6 +18,9 @@ with the full covariance matrix this array is added to the diagonal of that cova
 
 IMPORTANT: If you are already propagating an uncertainty from the linear theory parameter beta,
 which scales linearly with the peculiar velocites, set sigma_lineartheory to zero.
+
+For further details see: https://www.overleaf.com/read/bzpnwnmcqhfj
+
 '''
 
 def get_sigma_redshift_pecvel():
