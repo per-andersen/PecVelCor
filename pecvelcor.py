@@ -56,7 +56,7 @@ def get_sigma_mu_pecvel(redshifts,sigma_lineartheory=150.,sigma_shotnoise=125.,s
 	assert isinstance(redshifts, np.ndarray),'Expected numpy array but found %s' % type(redshifts)
 	assert np.min(redshifts) > 0., 'Zero or negative redshift in input array!'
 
-	sigma_redshift_pecvel = get_sigma_redshift_pecvel()
+	sigma_redshift_pecvel = get_sigma_redshift_pecvel(sigma_lineartheory=sigma_lineartheory,sigma_shotnoise=sigma_shotnoise,sigma_missingdata=sigma_missingdata)
 
 	sigma_mu_pecvel = sigma_redshift_pecvel * 5./np.log(10.)*(1.+redshifts)**2 / (redshifts*(1+0.5*redshifts))
 
