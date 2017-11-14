@@ -23,16 +23,38 @@ For further details see: https://www.overleaf.com/read/bzpnwnmcqhfj
 
 '''
 
-def get_sigma_redshift_pecvel():
-	sigma_lineartheory = 150.
-	sigma_shotnoise = 125.
-	sigma_missingdata = 100.
+def get_sigma_redshift_pecvel(sigma_lineartheory=150.,sigma_shotnoise=125.,sigma_missingdata=100.):
+	'''Return the redshift uncertainty asociated with correcting redhift for
+	peculiar motion.
+
+	Keyword arguments:
+	sigma_lineartheory -- uncertainty from limits of linear theory (default 150.0)
+	sigma_shotnoise -- uncertainty from shotnoise in 2M++ (default 125.0)
+	sigma_missingdata -- uncertainty from missing data in 2M++ (default 100.0)
+	'''
+
+	assert isinstance(sigma_lineartheory, float),'Expected float but found %s' % type(sigma_lineartheory)
+	assert isinstance(sigma_shotnoise, float),'Expected float but found %s' % type(sigma_lineartheory)
+	assert isinstance(sigma_missingdata, float),'Expected float but found %s' % type(sigma_lineartheory)
 
 	sigma_redshift_pecvel = np.sqrt(sigma_lineartheory**2 + sigma_shotnoise**2 + sigma_missingdata**2) / 2.99792e5
 
 	return sigma_redshift_pecvel
 
-def get_sigma_mu_pecvel(redshifts):
+
+def get_sigma_mu_pecvel(redshifts,sigma_lineartheory=150.,sigma_shotnoise=125.,sigma_missingdata=100.):
+	'''Return the magnitude uncertainty asociated with correcting redhift for
+	peculiar motion.
+
+	Keyword arguments:
+	redshifts -- array of cosmological redshifts in CMB frame
+	sigma_lineartheory -- uncertainty from limits of linear theory (default 150.0)
+	sigma_shotnoise -- uncertainty from shotnoise in 2M++ (default 125.0)
+	sigma_missingdata -- uncertainty from missing data in 2M++ (default 100.0)
+	'''
+
+	assert isinstance(redshifts, np.ndarray),'Expected numpy array but found %s' % type(redshifts)
+	assert np.min(redshifts) > 0., 'Zero or negative redshift in input array!'
 
 	sigma_redshift_pecvel = get_sigma_redshift_pecvel()
 
@@ -42,8 +64,104 @@ def get_sigma_mu_pecvel(redshifts):
 
 if __name__ == '__main__':
 
-	# Some basic tests
+	# Some very basic tests
 
+	
+	# Type test
+	try:
+		sigma_redshift_pecvel = get_sigma_redshift_pecvel()
+		if type(sigma_redshift_pecvel) == np.float64:
+			pass
+		else:
+			print("get_sigma_redshift_pecvel() type test failed, did not return a np.float64!")
+	except:
+		pass
+
+	 # Assertion test
+	try:
+		sigma_redshift_pecvel = get_sigma_redshift_pecvel(sigma_lineartheory=[])
+		if type(sigma_redshift_pecvel) == np.float64:
+			pass
+		else:
+			print("get_sigma_redshift_pecvel() type test failed, did not return a np.float64!")
+	except AssertionError:
+		pass
+	except:
+		"get_sigma_redshift_pecvel() assertion test failed, did not raise AssertionError!"
+
+	# Assertion test
+	try:
+		sigma_redshift_pecvel = get_sigma_redshift_pecvel(sigma_missingdata=[])
+		if type(sigma_redshift_pecvel) == np.float64:
+			pass
+		else:
+			print("get_sigma_redshift_pecvel() type test failed, did not return a np.float64!")
+	except AssertionError:
+		pass
+	except:
+		"get_sigma_redshift_pecvel() assertion test failed, did not raise AssertionError!"
+
+	# Assertion test
+	try:
+		sigma_redshift_pecvel = get_sigma_redshift_pecvel(sigma_lineartheory=[])
+		if type(sigma_redshift_pecvel) == np.float64:
+			pass
+		else:
+			print("get_sigma_redshift_pecvel() type test failed, did not return a np.float64!")
+	except AssertionError:
+		pass
+	except:
+		"get_sigma_redshift_pecvel() assertion test failed, did not raise AssertionError!"
+
+
+	
+	### Function: get_sigma_mu_pecvel()
+
+	# Output type test
+	try:
+	  if type(get_sigma_mu_pecvel(np.array([0.1]))) == np.ndarray:
+	  	pass
+	  else:
+	  	print("get_sigma_mu_pecvel() type test failed, did not return numpy array!")
+	except:
+		pass
+
+	#  Assertion test
+	try:
+		get_sigma_mu_pecvel(np.array([0.1,-0.1,2.]))
+	except AssertionError:
+		pass
+	except:
+		"get_sigma_mu_pecvel() assertion test failed, did not raise AssertionError!"
+
+	#  Assertion test
+	try:
+		get_sigma_mu_pecvel(np.array([0.1,0.1,2.,0.]))
+	except AssertionError:
+		pass
+	except:
+		"get_sigma_mu_pecvel() assertion test failed, did not raise AssertionError!"
+
+	#  Assertion test
+	try:
+		get_sigma_mu_pecvel(1.)
+	except AssertionError:
+		pass
+	except:
+		"get_sigma_mu_pecvel() assertion test failed, did not raise AssertionError!"
+
+	#  Assertion test
+	try:
+		get_sigma_mu_pecvel([0.1,0.2,0.3])
+	except AssertionError:
+		pass
+	except:
+		"get_sigma_mu_pecvel() assertion test failed, did not raise AssertionError!"
+
+
+
+
+	# This produces a plot to visually test the output of get_sigma_mu_pecvel()
 	redshifts = np.linspace(0.001,0.1,100)
 
 	sigma_mu_pecvel = get_sigma_mu_pecvel(redshifts)
@@ -53,5 +171,7 @@ if __name__ == '__main__':
 	plt.ylim((0,0.2))
 	plt.xlabel('Cosmological redshift',size='large')
 	plt.ylabel(r'$\sigma_{\mu ,pec}$',size='x-large')
+	plt.plot([0.01,0.05,0.1],[.1612858744,0.03418254355,0.01831115415],'kx')
 	plt.plot(redshifts,sigma_mu_pecvel)
+	plt.text(0.02,0.175,'Visual test: Black crosses should intersect the blue line')
 	plt.show()
