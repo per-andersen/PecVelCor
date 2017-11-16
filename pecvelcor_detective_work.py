@@ -1,3 +1,7 @@
+import numpy as np
+from astropy.table import Table
+from astropy.io import fits
+import matplotlib.pyplot as plt
 
 def read_fits_file():
 
@@ -113,7 +117,21 @@ def problematic_data():
 
 	for ii in range(len(problems[problems_vel!=0.])):
 		print problems[problems_vel!=0.][ii], problems_delta[problems_vel!=0.][ii], problems_fits[problems_vel!=0.][ii],problems_fitres[problems_vel!=0.][ii]
+
+def pecvel_redshift_method_error():
+	f, axarr = plt.subplots(2,sharex=True)
+	axarr[0].set_ylabel('vpec [km/s]',size='large')
+	axarr[0].plot(combined_fitres[:,1][combined_fitres[:,2]!=0.], ((1.+combined_fitres[:,1][combined_fitres[:,2]!=0.]) / (1.+combined_fitres[:,0][combined_fitres[:,2]!=0.]) - 1.)*2.99792e5,'rx',label='Method 1')
+	axarr[0].plot(combined_fitres[:,1][combined_fitres[:,2]!=0.], combined_fitres[:,2][combined_fitres[:,2]!=0.],'bx',label='Method 2')
+
+	axarr[1].set_ylabel('Error [km/s]',size='large')
+	axarr[1].plot(combined_fitres[:,1],combined_fitres[:,2] - ((1.+combined_fitres[:,1]) / (1.+combined_fitres[:,0]) - 1.)*2.99792e5,'kx')
+	#axarr[1].plot(combined_fitres[:,1],combined_fitres[:,2] - (combined_fitres[:,1]-combined_fitres[:,0])*2.99792e5,'kx')
 	
+	plt.xlim(0,0.1)
+	plt.xlabel('Cosmological redshift',size='large')
+	plt.subplots_adjust(left=0.12,bottom=0.12,right=0.96,top=0.98,wspace=0.,hspace=0.)
+	#plt.savefig('pecvel_redshift_method_error.pdf',format='pdf')
 
 if __name__ == '__main__':
 	root_dir='/Users/perandersen/Github/SpectroSN-master/'
@@ -122,4 +140,5 @@ if __name__ == '__main__':
 	#problematic_data()
 	#plot_percentage_difference_zhd()
 	#plot_delta_zhd_vpec()
-	#plt.show()
+	pecvel_redshift_method_error()
+	plt.show()
